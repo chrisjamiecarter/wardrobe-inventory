@@ -1,0 +1,38 @@
+﻿@page "/wardrobe"
+
+<h3>Wardrobe Items</h3>
+
+<ul>
+    @foreach (var item in wardrobeItems)
+    {
+        <li>
+            <img src="@(item.ImagePath)" alt="Item Image" />
+            <p>@item.Name</p>
+            <p>@item.Color</p>
+            <p>@item.Material</p>
+            <p>@item.Size</p>
+        </li>
+    }
+</ul>
+
+@code {
+    private IReadOnlyList<WardrobeItemDto> wardrobeItems = [];
+
+    protected override Task OnInitializedAsync()
+    {
+        var items = new List<WardrobeItemDto>();
+        items.Add(new WardrobeItemDto
+        {
+            Id = Guid.NewGuid(),
+            Name = "Name",
+            ImagePath = "/img/B5FCD8C6-66E8-4F42-97C8-B6921C8DEC30.png",
+            Color = WardrobeItemColours.Floral,
+            Material = WardrobeItemMaterials.Satin,
+            Size = WardrobeItemSizes.L,
+        });
+
+        wardrobeItems = items;
+
+        return Task.CompletedTask;
+    }
+}
