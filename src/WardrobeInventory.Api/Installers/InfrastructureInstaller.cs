@@ -10,7 +10,11 @@ public static class InfrastructureInstaller
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        var connectionString = $"Data Source={nameof(WardrobeInventory)}.db";
+        var directoryPath = AppDomain.CurrentDomain.BaseDirectory;
+        var fileName = $"{nameof(WardrobeInventory)}.db";
+        var filePath = Path.Combine(directoryPath, fileName);
+
+        var connectionString = $"Data Source={filePath}";
 
         services.AddDbContext<WardrobeInventoryDbContext>(options =>
         {

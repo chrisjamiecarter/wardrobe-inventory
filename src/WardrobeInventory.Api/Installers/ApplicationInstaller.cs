@@ -1,5 +1,9 @@
 ﻿namespace WardrobeInventory.Api.Installers;
 
-public class ApplicationInstaller
+public static class ApplicationInstaller
 {
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        return services;
+    }
 }

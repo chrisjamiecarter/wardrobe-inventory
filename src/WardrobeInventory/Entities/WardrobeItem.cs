@@ -10,9 +10,9 @@ public class WardrobeItem
 
     public string ImagePath { get; set; } = "/img/B5FCD8C6-66E8-4F42-97C8-B6921C8DEC30.png";
 
-    public WardrobeItemColours? Color { get; set; }
-
-    public WardrobeItemSizes? Size { get; set; }
+    public WardrobeItemColours? Colour { get; set; }
 
     public WardrobeItemMaterials? Material { get; set; }
+
+    public WardrobeItemSizes? Size { get; set; }
 }

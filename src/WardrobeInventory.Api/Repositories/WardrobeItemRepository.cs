@@ -8,21 +8,17 @@ namespace WardrobeInventory.Api.Repositories;
 
 public class WardrobeItemRepository(WardrobeInventoryDbContext context) : IGenericRepository<WardrobeItem>
 {
-    public async Task<bool> CreateAsync(WardrobeItem request)
+    public async Task<bool> CreateAsync(WardrobeItem entity)
     {
-        await context.WardrobeItems.AddAsync(request);
+        await context.WardrobeItems.AddAsync(entity);
         
         var result = await SaveChangesAsync();
         return result > 0;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(WardrobeItem entity)
     {
-        var entity = await context.WardrobeItems.FindAsync(id);
-        if (entity is not null)
-        {
-            context.WardrobeItems.Remove(entity);
-        }
+        context.WardrobeItems.Remove(entity);
 
         var result = await SaveChangesAsync();
         return result > 0;
@@ -38,22 +34,10 @@ public class WardrobeItemRepository(WardrobeInventoryDbContext context) : IGener
         return await context.WardrobeItems.FindAsync(id);
     }
 
-    public async Task<bool> UpdateAsync(WardrobeItem request)
+    public async Task<bool> UpdateAsync(WardrobeItem entity)
     {
-        var entity = await context.WardrobeItems.FindAsync(request.Id);
-        if (entity is not null)
-        {
-            entity.Name = request.Name;
-            if (!string.IsNullOrWhiteSpace(request.ImagePath))
-            {
-                entity.ImagePath = request.ImagePath;
-            }
-            entity.Color = request.Color;
-            entity.Size = request.Size;
-            entity.Material = request.Material;
-            context.WardrobeItems.Update(entity);
-        }
-
+        context.WardrobeItems.Update(entity);
+        
         var result = await SaveChangesAsync();
         return result > 0;
     }
