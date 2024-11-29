@@ -1,3 +1,5 @@
-﻿namespace WardrobeInventory.Api.Contracts.Responses;
+﻿using WardrobeInventory.Enums;
 
-public record WardrobeItemResponse(Guid Id, string Name, string ImagePath, string Colour, string Size, string Material);
+namespace WardrobeInventory.Api.Contracts.Responses;
+
+public record WardrobeItemResponse(Guid Id, string Name, string ImagePath, WardrobeItemColours? Colour, WardrobeItemMaterials? Material, WardrobeItemSizes? Size);

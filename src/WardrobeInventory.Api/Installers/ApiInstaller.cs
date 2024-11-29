@@ -6,8 +6,8 @@ public static class ApiInstaller
 {
     public static IServiceCollection AddApi(this IServiceCollection services)
     {
+        services.AddCors();
         services.AddControllers();
-        
         services.AddOpenApi();
 
         return services;
@@ -21,9 +21,13 @@ public static class ApiInstaller
         {
             app.MapScalarApiReference(options =>
             {
-                options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+                options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.RestSharp);
             });
         }
+        app.UseCors(options =>
+        {
+            options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+        });
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();

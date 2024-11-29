@@ -1,4 +1,5 @@
-﻿@page "/wardrobe"
+﻿@page "/wardrobeitems"
+@inject WardrobeItemService WardrobeItemService
 
 <h3>Wardrobe Items</h3>
 
@@ -7,10 +8,7 @@
     {
         <li>
             <img src="@(item.ImagePath)" alt="Item Image" />
-            <p>@item.Name</p>
-            <p>@item.Color</p>
-            <p>@item.Material</p>
-            <p>@item.Size</p>
+            <p>@item.Name | @item.Colour | @item.Size | @item.Material</p>
         </li>
     }
 </ul>
@@ -18,21 +16,9 @@
 @code {
     private IReadOnlyList<WardrobeItemDto> wardrobeItems = [];
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        var items = new List<WardrobeItemDto>();
-        items.Add(new WardrobeItemDto
-        {
-            Id = Guid.NewGuid(),
-            Name = "Name",
-            ImagePath = "/img/B5FCD8C6-66E8-4F42-97C8-B6921C8DEC30.png",
-            Color = WardrobeItemColours.Floral,
-            Material = WardrobeItemMaterials.Satin,
-            Size = WardrobeItemSizes.L,
-        });
-
-        wardrobeItems = items;
-
-        return Task.CompletedTask;
+        var response = await WardrobeItemService.GetWardrobeItems();
+        wardrobeItems = response.WardrobeItems ?? [];
     }
 }
