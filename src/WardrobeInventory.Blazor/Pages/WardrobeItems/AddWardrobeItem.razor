@@ -1,4 +1,5 @@
 ﻿@page "/wardrobeitems/add"
+@inject ImageFileService ImageFileService
 @inject NavigationManager NavigationManager
 @inject WardrobeItemService WardrobeItemService
 
@@ -56,6 +57,15 @@
 
     private async Task AddWardrobeItemAsync()
     {
+        if (file is not null)
+        {
+            var imageFileResponse = await ImageFileService.PostImageFile(file);
+            if (imageFileResponse.IsSuccess)
+            {
+                request.ImagePath = imageFileResponse.ImagePath;
+            }
+        }
+
         var response = await WardrobeItemService.PostWardrobeItem(request);
 
         Console.WriteLine($"{nameof(AddWardrobeItemAsync)} - {response.IsSuccess}");
