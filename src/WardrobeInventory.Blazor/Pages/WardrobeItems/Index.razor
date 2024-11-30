@@ -1,17 +1,32 @@
-﻿@page "/wardrobeitems"
+﻿@page "/"
 @inject WardrobeItemService WardrobeItemService
 
-<h3>Wardrobe Items</h3>
+<PageTitle>Wardrobe Inventory</PageTitle>
 
-<ul>
-    @foreach (var item in wardrobeItems)
-    {
-        <li>
-            <img src="@(item.ImagePath)" alt="Item Image" />
-            <p>@item.Name | @item.Colour | @item.Size | @item.Material</p>
-        </li>
-    }
-</ul>
+<table>
+    <tbody>
+        @foreach (var item in wardrobeItems)
+        {
+            <tr>
+                <td class="col-1">
+                    <img class="rounded img-thumbnail" src="@(item.ImagePath)" alt="Item Image" />
+                </td>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Colour?.GetDisplayName()
+                </td>
+                <td>
+                    @item.Size?.GetDisplayName()
+                </td>
+                <td>
+                    @item.Material?.GetDisplayName()
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
     private IReadOnlyList<WardrobeItemDto> wardrobeItems = [];
