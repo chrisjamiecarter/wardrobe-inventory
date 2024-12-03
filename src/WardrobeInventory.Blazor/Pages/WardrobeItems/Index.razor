@@ -3,33 +3,53 @@
 
 <PageTitle>Wardrobe Inventory</PageTitle>
 
-<table>
-    <tbody>
-        @foreach (var item in wardrobeItems)
-        {
-            <tr>
-                <td class="col-1">
-                    <img class="rounded img-thumbnail" src="@(item.ImagePath)" alt="Item Image" />
-                </td>
-                <td>
-                    @item.Name
-                </td>
-                <td>
-                    @item.Colour?.GetDisplayName()
-                </td>
-                <td>
-                    @item.Size?.GetDisplayName()
-                </td>
-                <td>
-                    @item.Material?.GetDisplayName()
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+@if (wardrobeItems is null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <div class="container">
+        <div class="table-responsive-sm">
+            <table class="table table-hover table-dark align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" colspan="2">Item</th>
+                        <th scope="col" colspan="3">Description</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in wardrobeItems)
+                    {
+                        <tr>
+                            <td class="col-1">
+                                <img class="rounded img-thumbnail" src="@(item.ImagePath)" alt="Item Image" />
+                            </td>
+                            <td>
+                                @item.Name
+                            </td>
+                            <td>
+                                @item.Colour?.GetDisplayName()
+                            </td>
+                            <td>
+                                @item.Size?.GetDisplayName()
+                            </td>
+                            <td>
+                                @item.Material?.GetDisplayName()
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
 
 @code {
-    private IReadOnlyList<WardrobeItemDto> wardrobeItems = [];
+    private IReadOnlyList<WardrobeItemDto>? wardrobeItems;
 
     protected override async Task OnInitializedAsync()
     {

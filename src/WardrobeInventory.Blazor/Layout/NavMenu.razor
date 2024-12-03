@@ -1,34 +1,21 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">WardrobeInventory.Blazor</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+﻿<nav class="navbar border-bottom border-body py-3" data-bs-theme="dark">
+    <div class="container">
+        <NavLink class="navbar-brand text-white" href="" rel="tooltip" title="Wardrobe Inventory" data-placement="bottom" target="_blank">
+            Wardrobe Inventory
+        </NavLink>
+        
+        <div class="d-flex gap-2">
+            <div class="btn-group">
+                <a class="btn btn-outline-secondary" href="https://www.linkedin.com/in/chris-carter-1495801aa/" target="_blank" rel="noreferrer" role="button" aria-label="LinkedIn">
+                    <LinkedInSvg />
+                </a>
+                <a class="btn btn-outline-secondary" href="https://github.com/chrisjamiecarter/" target="_blank" rel="noreferrer" role="button" aria-label="Github">
+                    <GitHubSvg />
+                </a>
+            </div>
+        </div>
     </div>
-</div>
-
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="add">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add
-            </NavLink>
-        </div>
-    </nav>
-</div>
+</nav>
 
 @code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
 }
