@@ -1,0 +1,110 @@
+﻿@page "/edit"
+@inject ImageFileService ImageFileService
+@inject NavigationManager NavigationManager
+@inject WardrobeItemService WardrobeItemService
+
+<h3>Edit Wardrobe Item</h3>
+
+<EditForm Model="@request" method="post" OnValidSubmit="AddWardrobeItemAsync" FormName="AddWardrobeItem">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText @bind-Value=request.Name id="requestName" />
+    <label for="requestName">Name</label>
+    <ValidationMessage For="() => request.Name" />
+
+    <InputFile OnChange="LoadFile" accept=".png,.jpg,.jpeg" />
+    <label for="requestFile">Image</label>
+    @if (!string.IsNullOrWhiteSpace(fileErrorMessage))
+    {
+        <span>@fileErrorMessage</span>
+    }
+
+    <InputSelect @bind-Value=request.Colour id="requestColour">
+        <option></option>
+        @foreach (WardrobeItemColours colour in Enum.GetValues(typeof(WardrobeItemColours)))
+        {
+            <option value="@colour">@colour.GetDisplayName()</option>
+        }
+    </InputSelect>
+    <label for="requestColour">Colour</label>
+
+    <InputSelect @bind-Value=request.Material id="requestMaterial">
+        <option></option>
+        @foreach (WardrobeItemMaterials material in Enum.GetValues(typeof(WardrobeItemMaterials)))
+        {
+            <option value="@material">@material.GetDisplayName()</option>
+        }
+    </InputSelect>
+    <label for="requestMaterial">Material</label>
+
+    <InputSelect @bind-Value=request.Size id="requestSize">
+        <option></option>
+        @foreach (WardrobeItemSizes size in Enum.GetValues(typeof(WardrobeItemSizes)))
+        {
+            <option value="@size">@size.GetDisplayName()</option>
+        }
+    </InputSelect>
+    <label for="requestSize">Size</label>
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+@code {
+    private WardrobeItemCreateDto request = new();
+    private IBrowserFile? file = null;
+    private string fileErrorMessage = "";
+
+    private async Task AddWardrobeItemAsync()
+    {
+        if (file is not null)
+        {
+            var imageFileResponse = await ImageFileService.PostImageFile(file);
+            if (imageFileResponse.IsSuccess)
+            {
+                request.ImagePath = imageFileResponse.ImagePath;
+            }
+        }
+
+        var response = await WardrobeItemService.PostWardrobeItem(request);
+
+        Console.WriteLine($"{nameof(AddWardrobeItemAsync)} - {response.IsSuccess}");
+        if (response.IsSuccess)
+        {
+            Console.WriteLine($"{response.WardrobeItem?.Id} - {response.WardrobeItem?.Name}");
+        }
+        else
+        {
+            Console.WriteLine(response.Message);
+        }
+
+        NavigationManager.NavigateTo("/wardrobeitems");
+    }
+
+    private void LoadFile(InputFileChangeEventArgs e)
+    {
+        var inputFile = e.File;
+        fileErrorMessage = "";
+
+        var allowedFileTypes = new List<string> { ".png", ".jpg", ".jpeg" };
+        var maximumFileSize = 5 * 1024 * 1024;
+
+        Console.WriteLine($"Name = {inputFile.Name}");
+        Console.WriteLine($"Size = {inputFile.Size}");
+        Console.WriteLine($"ContentType = {inputFile.ContentType}");
+
+        if (!allowedFileTypes.Contains(Path.GetExtension(inputFile.Name)))
+        {
+            fileErrorMessage = "File not a valid type (PNG, JPG, JPEG)! It will not be uploaded.";
+            file = null;
+        }
+
+        if (inputFile.Size > maximumFileSize)
+        {
+            fileErrorMessage = "File exceeds maximum (5 MB)! It will not be uploaded.";
+            file = null;
+        }
+                
+        file = e.File;
+    }
+}

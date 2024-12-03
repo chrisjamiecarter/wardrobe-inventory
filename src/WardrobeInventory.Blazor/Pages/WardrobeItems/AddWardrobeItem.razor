@@ -3,57 +3,77 @@
 @inject NavigationManager NavigationManager
 @inject WardrobeItemService WardrobeItemService
 
-<h3>Add Wardrobe Item</h3>
+<div class="container">
 
-<EditForm Model="@request" method="post" OnValidSubmit="AddWardrobeItemAsync" FormName="AddWardrobeItem">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+    <h1>Add Wardrobe Item</h1>
 
-    <InputText @bind-Value=request.Name id="requestName" />
-    <label for="requestName">Name</label>
-    <ValidationMessage For="() => request.Name" />
+    <EditForm Model="@request" method="post" OnValidSubmit="AddWardrobeItemAsync" FormName="AddWardrobeItem" class="form-group">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    <InputFile OnChange="LoadFile" accept=".png,.jpg,.jpeg" />
-    <label for="requestFile">Image</label>
-    @if (!string.IsNullOrWhiteSpace(fileErrorMessage))
-    {
-        <span>@fileErrorMessage</span>
-    }
+        <div class="form-floating mb-1">
+            <InputText @bind-Value="request.Name" id="requestName" class="form-control text-start" placeholder="Name" />
+            <label for="requestName">Name</label>
+            <ValidationMessage For="() => request.Name" />
+        </div>
 
-    <InputSelect @bind-Value=request.Colour id="requestColour">
-        <option></option>
-        @foreach (WardrobeItemColours colour in Enum.GetValues(typeof(WardrobeItemColours)))
-        {
-            <option value="@colour">@colour.GetDisplayName()</option>
-        }
-    </InputSelect>
-    <label for="requestColour">Colour</label>
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="test" class="form-control" id="testinput" placeholder="Test" />
+            <label for="testinput">Test</label>
+        </div>
 
-    <InputSelect @bind-Value=request.Material id="requestMaterial">
-        <option></option>
-        @foreach (WardrobeItemMaterials material in Enum.GetValues(typeof(WardrobeItemMaterials)))
-        {
-            <option value="@material">@material.GetDisplayName()</option>
-        }
-    </InputSelect>
-    <label for="requestMaterial">Material</label>
+        <div class="mb-1">
+            <InputFile OnChange="LoadFile" accept=".png,.jpg,.jpeg" id="requestFile" class="form-control" placeholder="Image" />
+            <label for="requestFile" class="visually-hidden">Image</label>
+            @if (!string.IsNullOrWhiteSpace(fileErrorMessage))
+            {
+                <span>@fileErrorMessage</span>
+            }
+        </div>
 
-    <InputSelect @bind-Value=request.Size id="requestSize">
-        <option></option>
-        @foreach (WardrobeItemSizes size in Enum.GetValues(typeof(WardrobeItemSizes)))
-        {
-            <option value="@size">@size.GetDisplayName()</option>
-        }
-    </InputSelect>
-    <label for="requestSize">Size</label>
+        <div class="form-floating mb-1">
+            <InputSelect @bind-Value="request.Colour" id="requestColour" class="form-select" aria-label="Colour select">
+                <option selected>Select a Colour</option>
+                @foreach (WardrobeItemColours colour in Enum.GetValues(typeof(WardrobeItemColours)))
+                {
+                    <option value="@colour">@colour.GetDisplayName()</option>
+                }
+            </InputSelect>
+            <label for="requestColour">Colour</label>
+        </div>
 
-    <button type="submit">Submit</button>
-</EditForm>
+        <div class="form-floating mb-1">
+            <InputSelect @bind-Value="request.Material" id="requestMaterial" class="form-select" aria-label="Material select">
+                <option selected>Select a Material</option>
+                @foreach (WardrobeItemMaterials material in Enum.GetValues(typeof(WardrobeItemMaterials)))
+                {
+                    <option value="@material">@material.GetDisplayName()</option>
+                }
+            </InputSelect>
+            <label for="requestMaterial">Material</label>
+        </div>
+
+        <div class="form-floating mb-1">
+            <InputSelect @bind-Value="request.Size" id="requestSize" class="form-select" aria-label="Size select">
+                <option selected>Select a Size</option>
+                @foreach (WardrobeItemSizes size in Enum.GetValues(typeof(WardrobeItemSizes)))
+                {
+                    <option value="@size">@size.GetDisplayName()</option>
+                }
+            </InputSelect>
+            <label for="requestSize">Size</label>
+        </div>
+
+        <button class="btn btn-primary btn-sm" type="submit">Submit</button>
+    </EditForm>
+
+</div>
 
 @code {
     private WardrobeItemCreateDto request = new();
     private IBrowserFile? file = null;
     private string fileErrorMessage = "";
+    private string test = "";
 
     private async Task AddWardrobeItemAsync()
     {
@@ -104,7 +124,7 @@
             fileErrorMessage = "File exceeds maximum (5 MB)! It will not be uploaded.";
             file = null;
         }
-                
+
         file = e.File;
     }
 }

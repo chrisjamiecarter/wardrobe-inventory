@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject NavigationManager NavigationManager
 @inject WardrobeItemService WardrobeItemService
 
 <PageTitle>Wardrobe Inventory</PageTitle>
@@ -11,19 +12,34 @@ else
 {
     <div class="container">
         <div class="table-responsive-sm">
+            <div>
+                <input />
+                <input />
+                <input />
+                <input />
+                <button>Reset</button>
+            </div>
             <table class="table table-hover table-dark align-middle">
                 <thead>
                     <tr>
-                        <th scope="col" colspan="2">Item</th>
-                        <th scope="col" colspan="3">Description</th>
-                        <th scope="col"></th>
+                        <th class="col-1" scope="col" colspan="2">
+                            Item
+                        </th>
+                        <th scope="col" colspan="3">
+                            Description
+                        </th>
+                        <th class="col-1" scope="col">
+                            <div class="">
+                                <AddButton OnClickCallback="@(() => NavigateToAddWardrobeItem())" />
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in wardrobeItems)
                     {
                         <tr>
-                            <td class="col-1">
+                            <td>
                                 <img class="rounded img-thumbnail" src="@(item.ImagePath)" alt="Item Image" />
                             </td>
                             <td>
@@ -39,10 +55,21 @@ else
                                 @item.Material?.GetDisplayName()
                             </td>
                             <td>
+                                <div class="d-flex justify-content-between gap-1">
+                                    <EditButton OnClickCallback="@(() => NavigateToEditWardrobeItem(item.Id))" />
+                                    <DeleteButton OnClickCallback="@(() => NavigateToDeleteWardrobeItem(item.Id))" />
+                                </div>
                             </td>
                         </tr>
                     }
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-end" colspan="6">
+                            @(wardrobeItems.Count) wardrobe items found.
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -55,5 +82,20 @@ else
     {
         var response = await WardrobeItemService.GetWardrobeItems();
         wardrobeItems = response.WardrobeItems ?? [];
+    }
+
+    private void NavigateToAddWardrobeItem()
+    {
+        NavigationManager.NavigateTo($"/add");
+    }
+
+    private void NavigateToDeleteWardrobeItem(Guid id)
+    {
+        NavigationManager.NavigateTo($"/delete/{id}");
+    }
+
+    private void NavigateToEditWardrobeItem(Guid id)
+    {
+        NavigationManager.NavigateTo($"/edit/{id}");
     }
 }
