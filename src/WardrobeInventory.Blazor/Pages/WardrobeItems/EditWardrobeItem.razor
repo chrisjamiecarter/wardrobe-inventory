@@ -7,88 +7,140 @@
 
 <div class="container">
 
-    <h1 class="h3 mb-3">Edit Wardrobe Item</h1>
+    <h1 class="h5 mb-3">Edit Wardrobe Item</h1>
 
-    <EditForm Model="@request" method="post" OnValidSubmit="AddWardrobeItemAsync" FormName="AddWardrobeItem" class="form-group">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+    @if (isLoading)
+    {
+        <LoadingSpinner />
+    }
+    else if (request is null)
+    {
+        <span>No wardrobe item found for id '@(Id)'</span>
+    }
+    else
+    {
+        @if(file is null)
+        {
+            <div class="col-1 mb-3">
+                <img class="rounded img-thumbnail" src="@(request.ImagePath)" alt="Item Image" />
+            </div>
+        }
 
-        <div class="form-floating mb-3">
-            <InputText @bind-Value="request.Name" id="requestName" class="form-control text-start" placeholder="Name" />
-            <label for="requestName">Name</label>
-            <ValidationMessage For="() => request.Name" />
-        </div>
+        <EditForm Model="@request" method="post" OnValidSubmit="EditWardrobeItemAsync" FormName="EditWardrobeItem" class="form-group">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-        <div class="mb-3">
-            <InputFile OnChange="LoadFile" accept=".png,.jpg,.jpeg" id="requestFile" class="form-control" placeholder="Image" />
-            <label for="requestFile" class="visually-hidden">Image</label>
-            @if (!string.IsNullOrWhiteSpace(fileErrorMessage))
-            {
-                <span>@fileErrorMessage</span>
-            }
-        </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="request.Name" id="requestName" class="form-control" placeholder="Name" />
+                <label for="requestName">Name</label>
+                <ValidationMessage For="() => request.Name" />
+            </div>
 
-        <div class="form-floating mb-3">
-            <InputSelect @bind-Value="request.Colour" id="requestColour" class="form-select" aria-label="Colour select">
-                <option value="" selected>Select a Colour</option>
-                @foreach (WardrobeItemColours colour in Enum.GetValues(typeof(WardrobeItemColours)))
+            <div class="mb-3">
+                <InputFile OnChange="LoadFile"  accept=".png,.jpg,.jpeg" id="requestFile" class="form-control" placeholder="Image" />
+                <label for="requestFile" class="visually-hidden">Image</label>
+                @if (!string.IsNullOrWhiteSpace(fileErrorMessage))
                 {
-                    <option value="@colour">@colour.GetDisplayName()</option>
+                    <span>@fileErrorMessage</span>
                 }
-            </InputSelect>
-            <label for="requestColour">Colour</label>
-        </div>
+            </div>
 
-        <div class="form-floating mb-3">
-            <InputSelect @bind-Value="request.Material" id="requestMaterial" class="form-select" aria-label="Material select">
-                <option value="" selected>Select a Material</option>
-                @foreach (WardrobeItemMaterials material in Enum.GetValues(typeof(WardrobeItemMaterials)))
-                {
-                    <option value="@material">@material.GetDisplayName()</option>
-                }
-            </InputSelect>
-            <label for="requestMaterial">Material</label>
-        </div>
+            <div class="form-floating mb-3">
+                <InputSelect @bind-Value="request.Colour" id="requestColour" class="form-select" aria-label="Colour select">
+                    <option value="" selected>Select a Colour</option>
+                    @foreach (WardrobeItemColours colour in Enum.GetValues(typeof(WardrobeItemColours)))
+                    {
+                        <option value="@colour">@colour.GetDisplayName()</option>
+                    }
+                </InputSelect>
+                <label for="requestColour">Colour</label>
+            </div>
 
-        <div class="form-floating mb-3">
-            <InputSelect @bind-Value="request.Size" id="requestSize" class="form-select" aria-label="Size select">
-                <option value="" selected>Select a Size</option>
-                @foreach (WardrobeItemSizes size in Enum.GetValues(typeof(WardrobeItemSizes)))
-                {
-                    <option value="@size">@size.GetDisplayName()</option>
-                }
-            </InputSelect>
-            <label for="requestSize">Size</label>
-        </div>
+            <div class="form-floating mb-3">
+                <InputSelect @bind-Value="request.Material" id="requestMaterial" class="form-select" aria-label="Material select">
+                    <option value="" selected>Select a Material</option>
+                    @foreach (WardrobeItemMaterials material in Enum.GetValues(typeof(WardrobeItemMaterials)))
+                    {
+                        <option value="@material">@material.GetDisplayName()</option>
+                    }
+                </InputSelect>
+                <label for="requestMaterial">Material</label>
+            </div>
 
-        <div class="d-flex justify-content-end gap-3">
-            <button class="btn btn-primary btn-sm" type="submit">Update</button>
-            <button class="btn btn-secondary btn-sm" type="button">Cancel</button>
-        </div>
+            <div class="form-floating mb-3">
+                <InputSelect @bind-Value="request.Size" id="requestSize" class="form-select" aria-label="Size select">
+                    <option value="" selected>Select a Size</option>
+                    @foreach (WardrobeItemSizes size in Enum.GetValues(typeof(WardrobeItemSizes)))
+                    {
+                        <option value="@size">@size.GetDisplayName()</option>
+                    }
+                </InputSelect>
+                <label for="requestSize">Size</label>
+            </div>
 
-    </EditForm>
+            <div class="d-flex justify-content-end gap-3">
+                <button class="btn btn-primary btn-sm" type="submit">Edit</button>
+                <button class="btn btn-secondary btn-sm" type="button" @onclick="NavigateToWardrobeItems">Cancel</button>
+            </div>
 
+        </EditForm>
+    }
 </div>
 
 @code {
-    private WardrobeItemCreateDto request = new();
+    [Parameter] public Guid Id { get; set; }
+
+    private bool isLoading = true;
+    private WardrobeItemDto? request;
     private IBrowserFile? file = null;
     private string fileErrorMessage = "";
 
-    private async Task AddWardrobeItemAsync()
+    protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
+
+        var response = await WardrobeItemService.GetWardrobeItem(Id);
+        Console.WriteLine($"{nameof(OnInitializedAsync)} - {response.IsSuccess}");
+        if (response.IsSuccess)
+        {
+            request = response.WardrobeItem;
+        }
+        else
+        {
+            Console.WriteLine(response.Message);
+        }
+
+        isLoading = false;
+    }
+
+    private async Task EditWardrobeItemAsync()
+    {
+        if (request is null)
+        {
+            Console.WriteLine("request is null");
+            return;
+        }
+
+        isLoading = true;
+
         if (file is not null)
         {
+            Console.WriteLine("uploading file");
             var imageFileResponse = await ImageFileService.PostImageFile(file);
+            Console.WriteLine($"imageFileResponse - {imageFileResponse.IsSuccess}");
             if (imageFileResponse.IsSuccess)
             {
                 request.ImagePath = imageFileResponse.ImagePath;
             }
+            else
+            {
+                Console.WriteLine(imageFileResponse.Message);
+            }
         }
 
-        var response = await WardrobeItemService.PostWardrobeItem(request);
+        var response = await WardrobeItemService.PutWardrobeItem(request);
 
-        Console.WriteLine($"{nameof(AddWardrobeItemAsync)} - {response.IsSuccess}");
+        Console.WriteLine($"{nameof(EditWardrobeItemAsync)} - {response.IsSuccess}");
         if (response.IsSuccess)
         {
             Console.WriteLine($"{response.WardrobeItem?.Id} - {response.WardrobeItem?.Name}");
@@ -98,7 +150,7 @@
             Console.WriteLine(response.Message);
         }
 
-        NavigationManager.NavigateTo("/wardrobeitems");
+        NavigationManager.NavigateTo("/");
     }
 
     private void LoadFile(InputFileChangeEventArgs e)
@@ -107,8 +159,7 @@
         fileErrorMessage = "";
 
         var allowedFileTypes = new List<string> { ".png", ".jpg", ".jpeg" };
-        var maximumFileSize = 5 * 1024 * 1024;
-
+        
         Console.WriteLine($"Name = {inputFile.Name}");
         Console.WriteLine($"Size = {inputFile.Size}");
         Console.WriteLine($"ContentType = {inputFile.ContentType}");
@@ -119,12 +170,17 @@
             file = null;
         }
 
-        if (inputFile.Size > maximumFileSize)
+        if (inputFile.Size > ImageFileConstants.MaximumFileSizeInBytes)
         {
             fileErrorMessage = "File exceeds maximum (5 MB)! It will not be uploaded.";
             file = null;
         }
                 
         file = e.File;
+    }
+
+    private void NavigateToWardrobeItems()
+    {
+        NavigationManager.NavigateTo($"/");
     }
 }
