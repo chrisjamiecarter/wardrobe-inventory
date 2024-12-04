@@ -3,26 +3,23 @@
 @inject NavigationManager NavigationManager
 @inject WardrobeItemService WardrobeItemService
 
+<PageTitle>Wardrobe Inventory - Add</PageTitle>
+
 <div class="container">
 
-    <h1>Add Wardrobe Item</h1>
+    <h1 class="h3 mb-3">Add Wardrobe Item</h1>
 
     <EditForm Model="@request" method="post" OnValidSubmit="AddWardrobeItemAsync" FormName="AddWardrobeItem" class="form-group">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <div class="form-floating mb-1">
+        <div class="form-floating mb-3">
             <InputText @bind-Value="request.Name" id="requestName" class="form-control text-start" placeholder="Name" />
             <label for="requestName">Name</label>
             <ValidationMessage For="() => request.Name" />
         </div>
 
-        <div class="form-floating mb-3">
-            <InputText @bind-Value="test" class="form-control" id="testinput" placeholder="Test" />
-            <label for="testinput">Test</label>
-        </div>
-
-        <div class="mb-1">
+        <div class="mb-3">
             <InputFile OnChange="LoadFile" accept=".png,.jpg,.jpeg" id="requestFile" class="form-control" placeholder="Image" />
             <label for="requestFile" class="visually-hidden">Image</label>
             @if (!string.IsNullOrWhiteSpace(fileErrorMessage))
@@ -31,9 +28,9 @@
             }
         </div>
 
-        <div class="form-floating mb-1">
+        <div class="form-floating mb-3">
             <InputSelect @bind-Value="request.Colour" id="requestColour" class="form-select" aria-label="Colour select">
-                <option selected>Select a Colour</option>
+                <option value="" selected>Select a Colour</option>
                 @foreach (WardrobeItemColours colour in Enum.GetValues(typeof(WardrobeItemColours)))
                 {
                     <option value="@colour">@colour.GetDisplayName()</option>
@@ -42,9 +39,9 @@
             <label for="requestColour">Colour</label>
         </div>
 
-        <div class="form-floating mb-1">
+        <div class="form-floating mb-3">
             <InputSelect @bind-Value="request.Material" id="requestMaterial" class="form-select" aria-label="Material select">
-                <option selected>Select a Material</option>
+                <option value="" selected>Select a Material</option>
                 @foreach (WardrobeItemMaterials material in Enum.GetValues(typeof(WardrobeItemMaterials)))
                 {
                     <option value="@material">@material.GetDisplayName()</option>
@@ -53,9 +50,9 @@
             <label for="requestMaterial">Material</label>
         </div>
 
-        <div class="form-floating mb-1">
+        <div class="form-floating mb-3">
             <InputSelect @bind-Value="request.Size" id="requestSize" class="form-select" aria-label="Size select">
-                <option selected>Select a Size</option>
+                <option value="" selected>Select a Size</option>
                 @foreach (WardrobeItemSizes size in Enum.GetValues(typeof(WardrobeItemSizes)))
                 {
                     <option value="@size">@size.GetDisplayName()</option>
@@ -64,7 +61,11 @@
             <label for="requestSize">Size</label>
         </div>
 
-        <button class="btn btn-primary btn-sm" type="submit">Submit</button>
+        <div class="d-flex justify-content-end gap-3">
+            <button class="btn btn-primary btn-sm" type="submit">Create</button>
+            <button class="btn btn-secondary btn-sm" type="button">Cancel</button>
+        </div>
+
     </EditForm>
 
 </div>
@@ -73,7 +74,6 @@
     private WardrobeItemCreateDto request = new();
     private IBrowserFile? file = null;
     private string fileErrorMessage = "";
-    private string test = "";
 
     private async Task AddWardrobeItemAsync()
     {
@@ -98,7 +98,7 @@
             Console.WriteLine(response.Message);
         }
 
-        NavigationManager.NavigateTo("/wardrobeitems");
+        NavigationManager.NavigateTo("/");
     }
 
     private void LoadFile(InputFileChangeEventArgs e)

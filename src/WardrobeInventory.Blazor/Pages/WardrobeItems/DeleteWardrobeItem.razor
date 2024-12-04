@@ -1,110 +1,94 @@
-﻿@page "/delete"
+﻿@page "/delete/{Id:guid}"
 @inject ImageFileService ImageFileService
 @inject NavigationManager NavigationManager
 @inject WardrobeItemService WardrobeItemService
 
-<h3>Delete Wardrobe Item</h3>
+<PageTitle>Wardrobe Inventory - Delete</PageTitle>
 
-<EditForm Model="@request" method="post" OnValidSubmit="AddWardrobeItemAsync" FormName="AddWardrobeItem">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="container">
 
-    <InputText @bind-Value=request.Name id="requestName" />
-    <label for="requestName">Name</label>
-    <ValidationMessage For="() => request.Name" />
+    <h1 class="h3 mb-3">Delete Wardrobe Item</h1>
 
-    <InputFile OnChange="LoadFile" accept=".png,.jpg,.jpeg" />
-    <label for="requestFile">Image</label>
-    @if (!string.IsNullOrWhiteSpace(fileErrorMessage))
+    @if (isLoading)
     {
-        <span>@fileErrorMessage</span>
+        <LoadingSpinner />
+    }
+    else if (request is null)
+    {
+        <span>No wardrobe item found for id '@(Id)'</span>
+    }
+    else
+    {
+        <EditForm Model="@request" method="post" OnValidSubmit="DeleteWardrobeItemAsync" FormName="DeleteWardrobeItem" class="form-group">
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="request.Name" id="requestName" class="form-control" placeholder="Name" readonly />
+                <label for="requestName">Name</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" value="@(request.Colour)" id="requestColour" class="form-control" placeholder="Colour" readonly />
+                <label for="requestColour">Colour</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" value="@(request.Material)" id="requestMaterial" class="form-control" placeholder="Material" readonly />
+                <label for="requestMaterial">Material</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" value="@(request.Size)" id="requestSize" class="form-control" placeholder="Size" readonly />
+                <label for="requestSize">Size</label>
+            </div>
+
+            <div class="d-flex justify-content-end gap-3">
+                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                <button class="btn btn-secondary btn-sm" type="button">Cancel</button>
+            </div>
+
+        </EditForm>
     }
 
-    <InputSelect @bind-Value=request.Colour id="requestColour">
-        <option></option>
-        @foreach (WardrobeItemColours colour in Enum.GetValues(typeof(WardrobeItemColours)))
-        {
-            <option value="@colour">@colour.GetDisplayName()</option>
-        }
-    </InputSelect>
-    <label for="requestColour">Colour</label>
-
-    <InputSelect @bind-Value=request.Material id="requestMaterial">
-        <option></option>
-        @foreach (WardrobeItemMaterials material in Enum.GetValues(typeof(WardrobeItemMaterials)))
-        {
-            <option value="@material">@material.GetDisplayName()</option>
-        }
-    </InputSelect>
-    <label for="requestMaterial">Material</label>
-
-    <InputSelect @bind-Value=request.Size id="requestSize">
-        <option></option>
-        @foreach (WardrobeItemSizes size in Enum.GetValues(typeof(WardrobeItemSizes)))
-        {
-            <option value="@size">@size.GetDisplayName()</option>
-        }
-    </InputSelect>
-    <label for="requestSize">Size</label>
-
-    <button type="submit">Submit</button>
-</EditForm>
+</div>
 
 @code {
-    private WardrobeItemCreateDto request = new();
-    private IBrowserFile? file = null;
-    private string fileErrorMessage = "";
+    [Parameter] public Guid Id { get; set; }
 
-    private async Task AddWardrobeItemAsync()
+    private bool isLoading = true;
+    private WardrobeItemDto? request;
+
+    protected override async Task OnInitializedAsync()
     {
-        if (file is not null)
-        {
-            var imageFileResponse = await ImageFileService.PostImageFile(file);
-            if (imageFileResponse.IsSuccess)
-            {
-                request.ImagePath = imageFileResponse.ImagePath;
-            }
-        }
+        isLoading = true;
 
-        var response = await WardrobeItemService.PostWardrobeItem(request);
-
-        Console.WriteLine($"{nameof(AddWardrobeItemAsync)} - {response.IsSuccess}");
+        var response = await WardrobeItemService.GetWardrobeItem(Id);
+        Console.WriteLine($"{nameof(OnInitializedAsync)} - {response.IsSuccess}");
         if (response.IsSuccess)
         {
-            Console.WriteLine($"{response.WardrobeItem?.Id} - {response.WardrobeItem?.Name}");
+            request = response.WardrobeItem;
         }
         else
         {
             Console.WriteLine(response.Message);
         }
 
-        NavigationManager.NavigateTo("/wardrobeitems");
+        isLoading = false;
     }
 
-    private void LoadFile(InputFileChangeEventArgs e)
+    private async Task DeleteWardrobeItemAsync()
     {
-        var inputFile = e.File;
-        fileErrorMessage = "";
-
-        var allowedFileTypes = new List<string> { ".png", ".jpg", ".jpeg" };
-        var maximumFileSize = 5 * 1024 * 1024;
-
-        Console.WriteLine($"Name = {inputFile.Name}");
-        Console.WriteLine($"Size = {inputFile.Size}");
-        Console.WriteLine($"ContentType = {inputFile.ContentType}");
-
-        if (!allowedFileTypes.Contains(Path.GetExtension(inputFile.Name)))
+        if (request is null)
         {
-            fileErrorMessage = "File not a valid type (PNG, JPG, JPEG)! It will not be uploaded.";
-            file = null;
+            return;
         }
 
-        if (inputFile.Size > maximumFileSize)
+        var response = await WardrobeItemService.DeleteWardrobeItem(request.Id);
+        Console.WriteLine($"{nameof(DeleteWardrobeItemAsync)} - {response.IsSuccess}");
+        if (!response.IsSuccess)
         {
-            fileErrorMessage = "File exceeds maximum (5 MB)! It will not be uploaded.";
-            file = null;
+            Console.WriteLine(response.Message);
         }
-                
-        file = e.File;
+
+        NavigationManager.NavigateTo("/");
     }
 }
