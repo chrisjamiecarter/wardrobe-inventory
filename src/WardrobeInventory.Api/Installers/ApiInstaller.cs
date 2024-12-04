@@ -16,7 +16,7 @@ public static class ApiInstaller
     public static WebApplication AddMiddleware(this WebApplication app)
     {
         app.MapOpenApi();
-        
+
         if (app.Environment.IsDevelopment())
         {
             app.MapScalarApiReference(options =>
@@ -38,7 +38,7 @@ public static class ApiInstaller
     public static WebApplication SetUpDatabase(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
-        
+
         var services = scope.ServiceProvider;
         services.SeedDatabase();
 

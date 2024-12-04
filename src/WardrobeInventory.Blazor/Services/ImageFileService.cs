@@ -1,9 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Components.Forms;
 using RestSharp;
-using WardrobeInventory.Blazor.Extensions;
-using WardrobeInventory.Blazor.Models;
 using WardrobeInventory.Blazor.Models.Responses;
+using WardrobeInventory.Constants;
 
 namespace WardrobeInventory.Blazor.Services;
 
@@ -22,8 +21,8 @@ public class ImageFileService
 
             var restRequest = new RestRequest(PostImageFileRoute);
             restRequest.AddHeader("Content-Type", "multipart/form-data");
-            
-            using var fileStream = request.OpenReadStream();
+
+            using var fileStream = request.OpenReadStream(maxAllowedSize: ImageFileConstants.MaximumFileSizeInBytes);
             using var memoryStream = new MemoryStream();
             await fileStream.CopyToAsync(memoryStream);
             memoryStream.Position = 0;

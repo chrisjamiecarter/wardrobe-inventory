@@ -146,6 +146,8 @@ public class WardrobeItemService
             using var restClient = new RestClient();
 
             var restRequest = new RestRequest(PutWardrobeItemRoute.Replace("{id}", request.Id.UrlEncoded()));
+            restRequest.AddHeader("Content-Type", "application/json");
+            restRequest.AddBody(JsonSerializer.Serialize(request));
 
             var restResponse = await restClient.ExecuteAsync(restRequest, Method.Put);
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using WardrobeInventory.Constants;
 
 namespace WardrobeInventory.Api.Controllers;
 
@@ -11,7 +12,6 @@ public class ImageFilesController(IHostEnvironment environment) : ControllerBase
     {
         try
         {
-            var maximumFileSize = 5 * 1024 * 1024;
             var allowedContentTypes = new List<string> { "image/png", "image/jpg", "image/jpeg" };
 
             if (!allowedContentTypes.Contains(file.ContentType))
@@ -19,7 +19,7 @@ public class ImageFilesController(IHostEnvironment environment) : ControllerBase
                 return TypedResults.BadRequest(new { error = $"Unable to post image file with content type: {file.ContentType}." });
             }
 
-            if (file.Length > maximumFileSize)
+            if (file.Length > ImageFileConstants.MaximumFileSizeInBytes)
             {
                 return TypedResults.BadRequest(new { error = $"Unable to post image file with exceeded maximum file size." });
             }
