@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WardrobeInventory.Api.Contexts;
 using WardrobeInventory.Api.Repositories;
-using WardrobeInventory.Entities;
 using WardrobeInventory.Repositories;
 
 namespace WardrobeInventory.Api.Installers;
@@ -21,7 +20,7 @@ public static class InfrastructureInstaller
             options.UseSqlite(connectionString);
         });
 
-        services.AddScoped<IGenericRepository<WardrobeItem>, WardrobeItemRepository>();
+        services.AddScoped<IWardrobeItemRepository, WardrobeItemRepository>();
 
         return services;
     }

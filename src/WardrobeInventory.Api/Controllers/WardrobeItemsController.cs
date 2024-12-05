@@ -8,7 +8,7 @@ namespace WardrobeInventory.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class WardrobeItemsController(IGenericRepository<WardrobeItem> repository) : ControllerBase
+public class WardrobeItemsController(IWardrobeItemRepository repository) : ControllerBase
 {
     [HttpDelete("{id}", Name = nameof(DeleteWardrobeItemAsync))]
     public async Task<IResult> DeleteWardrobeItemAsync([FromRoute] Guid id)

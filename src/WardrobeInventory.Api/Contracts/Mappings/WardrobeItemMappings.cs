@@ -1,8 +1,6 @@
-﻿using System.Drawing;
-using WardrobeInventory.Api.Contracts.Requests;
+﻿using WardrobeInventory.Api.Contracts.Requests;
 using WardrobeInventory.Api.Contracts.Responses;
 using WardrobeInventory.Entities;
-using WardrobeInventory.Enums;
 
 namespace WardrobeInventory.Api.Contracts.Mappings;
 
@@ -38,21 +36,6 @@ public static class WardrobeItemMappings
         {
             entity.ImagePath = request.ImagePath;
         }
-
-        //if (Enum.TryParse<WardrobeItemColours>(request.Colour, out var parsedColour))
-        //{
-        //    entity.Colour = parsedColour;
-        //}
-
-        //if (Enum.TryParse<WardrobeItemMaterials>(request.Material, out var parsedMaterial))
-        //{
-        //    entity.Material = parsedMaterial;
-        //}
-
-        //if (Enum.TryParse<WardrobeItemSizes>(request.Size, out var parsedSize))
-        //{
-        //    entity.Size = parsedSize;
-        //}
 
         return entity;
     }

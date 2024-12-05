@@ -1,6 +1,8 @@
-﻿namespace WardrobeInventory.Repositories;
+﻿using WardrobeInventory.Entities;
 
-public interface IGenericRepository<T> where T : class
+namespace WardrobeInventory.Repositories;
+
+public interface IGenericRepository<T> where T : BaseEntity
 {
     Task<bool> CreateAsync(T entity);
     Task<bool> DeleteAsync(T entity);
