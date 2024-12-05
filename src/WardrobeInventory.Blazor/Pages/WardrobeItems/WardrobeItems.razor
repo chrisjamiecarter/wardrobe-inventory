@@ -100,14 +100,32 @@ else
                         </tr>
                     }
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td class="text-end" colspan="6">
-                            @(FilteredWardrobeItems.Count) wardrobe items found.
-                        </td>
-                    </tr>
-                </tfoot>
             </table>
+            <nav aria-label="Select page">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item @(pageIndex == 0 ? "disabled" : "")">
+                        <a class="page-link">First</a>
+                    </li>
+                    <li class="page-item @(pageIndex == 0 ? "disabled" : "")">
+                        <a class="page-link">Previous</a>
+                    </li>
+                    @for (int i = pageIndex - 3; i < pageIndex + 3; i++)
+                    {
+                        if (i >= 0 && i < totalPages)
+                        {
+                            <li class="page-item @(pageIndex == i ? "disabled" : "")">
+                                <a class="page-link">@(i + 1)</a>
+                            </li>
+                        }
+                    }
+                    <li class="page-item  @(pageIndex == totalPages - 1 ? "disabled" : "")">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                    <li class="page-item  @(pageIndex == totalPages - 1 ? "disabled" : "")">
+                        <a class="page-link" href="#">Last</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 }
@@ -121,14 +139,16 @@ else
     private WardrobeItemMaterials? _searchMaterial = null;
     private WardrobeItemSizes? _searchSize = null;
 
+    private int pageIndex = 0;
+    private int pageSize = 5;
+    private int totalRecords = 0;
+    private int totalPages => ((totalRecords - 1) / pageSize) + 1;
+
     protected override async Task OnInitializedAsync()
     {
         var response = await WardrobeItemService.GetWardrobeItems();
         _wardrobeItems = response.WardrobeItems ?? [];
-        if (_wardrobeItems != null)
-        {
-            FilteredWardrobeItems = _wardrobeItems;
-        }
+        FilterWardrobeItems();
     }
 
     private void FilterWardrobeItemsByName(ChangeEventArgs e)
@@ -159,23 +179,31 @@ else
     {
         if (_wardrobeItems != null)
         {
-            FilteredWardrobeItems = _wardrobeItems;
-            FilteredWardrobeItems = FilteredWardrobeItems.Where(x => x.Name.ToLower().IndexOf(_searchName) >= 0).ToList();
+            var query = _wardrobeItems.AsQueryable();
+            query = query.Where(x => x.Name.ToLower().IndexOf(_searchName) >= 0);
 
             if (_searchColour != null)
             {
-                FilteredWardrobeItems = FilteredWardrobeItems.Where(x => x.Colour == _searchColour).ToList();
+                query = query.Where(x => x.Colour == _searchColour);
             }
 
             if (_searchMaterial != null)
             {
-                FilteredWardrobeItems = FilteredWardrobeItems.Where(x => x.Material == _searchMaterial).ToList();
+                query = query.Where(x => x.Material == _searchMaterial);
             }
 
             if (_searchSize != null)
             {
-                FilteredWardrobeItems = FilteredWardrobeItems.Where(x => x.Size == _searchSize).ToList();
+                query = query.Where(x => x.Size == _searchSize);
             }
+
+            totalRecords = query.Count();
+            FilteredWardrobeItems = query.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+            Console.WriteLine($"pageIndex={pageIndex}");
+            Console.WriteLine($"pageSize={pageSize}");
+            Console.WriteLine($"totalRecords={totalRecords}");
+            Console.WriteLine($"totalPages={totalPages}");
+
         }
     }
 
