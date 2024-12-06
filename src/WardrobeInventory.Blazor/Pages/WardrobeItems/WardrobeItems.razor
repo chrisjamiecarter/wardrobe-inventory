@@ -59,16 +59,14 @@ else
             <table class="table table-hover table-dark align-middle">
                 <thead>
                     <tr>
-                        <th scope="col" colspan="2">
+                        <th class="col-5" scope="col" colspan="2">
                             Item
                         </th>
-                        <th scope="col" colspan="3">
+                        <th class="col-6" scope="col" colspan="3">
                             Description
                         </th>
                         <th class="col-1" scope="col">
-                            <div class="">
-                                <AddButton OnClickCallback="@(() => NavigateToAddWardrobeItem())" />
-                            </div>
+                            <AddButton OnClickCallback="@(() => NavigateToAddWardrobeItem())" />
                         </th>
                     </tr>
                 </thead>
@@ -79,19 +77,19 @@ else
                             <td class="col-1">
                                 <img class="rounded img-thumbnail" src="@(item.ImagePath)" alt="Item Image" />
                             </td>
-                            <td>
+                            <td class="col-4">
                                 @item.Name
                             </td>
-                            <td>
+                            <td class="col-2">
                                 @item.Colour?.GetDisplayName()
                             </td>
-                            <td>
+                            <td class="col-2">
                                 @item.Size?.GetDisplayName()
                             </td>
-                            <td>
+                            <td class="col-2">
                                 @item.Material?.GetDisplayName()
                             </td>
-                            <td>
+                            <td class="col-1">
                                 <div class="d-flex justify-content-between gap-1">
                                     <EditButton OnClickCallback="@(() => NavigateToEditWardrobeItem(item.Id))" />
                                     <DeleteButton OnClickCallback="@(() => NavigateToDeleteWardrobeItem(item.Id))" />
@@ -104,25 +102,19 @@ else
             <nav aria-label="Select page">
                 <ul class="pagination justify-content-end">
                     <li class="page-item @(pageIndex == 0 ? "disabled" : "")">
-                        <a class="page-link">First</a>
+                        <button class="page-link" type="button" @onclick="@(() => SetPageIndex(0))">First</button>
                     </li>
                     <li class="page-item @(pageIndex == 0 ? "disabled" : "")">
-                        <a class="page-link">Previous</a>
+                        <button class="page-link" type="button" @onclick="@(() => SetPageIndex(pageIndex - 1))">Previous</button>
                     </li>
-                    @for (int i = pageIndex - 3; i < pageIndex + 3; i++)
-                    {
-                        if (i >= 0 && i < totalPages)
-                        {
-                            <li class="page-item @(pageIndex == i ? "disabled" : "")">
-                                <a class="page-link">@(i + 1)</a>
-                            </li>
-                        }
-                    }
-                    <li class="page-item  @(pageIndex == totalPages - 1 ? "disabled" : "")">
-                        <a class="page-link" href="#">Next</a>
+                    <li class="page-item disabled">
+                        <button class="page-link" type="button">Page @(pageIndex + 1) of @(totalPages) (@(totalRecords))</button>
                     </li>
                     <li class="page-item  @(pageIndex == totalPages - 1 ? "disabled" : "")">
-                        <a class="page-link" href="#">Last</a>
+                        <button class="page-link" type="button" @onclick="@(() => SetPageIndex(pageIndex + 1))">Next</button>
+                    </li>
+                    <li class="page-item  @(pageIndex == totalPages - 1 ? "disabled" : "")">
+                        <button class="page-link" type="button" @onclick="@(() => SetPageIndex(totalPages - 1))">Last</button>
                     </li>
                 </ul>
             </nav>
@@ -199,11 +191,12 @@ else
 
             totalRecords = query.Count();
             FilteredWardrobeItems = query.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+            Console.WriteLine();
             Console.WriteLine($"pageIndex={pageIndex}");
             Console.WriteLine($"pageSize={pageSize}");
             Console.WriteLine($"totalRecords={totalRecords}");
             Console.WriteLine($"totalPages={totalPages}");
-
+            Console.WriteLine();
         }
     }
 
@@ -220,5 +213,13 @@ else
     private void NavigateToEditWardrobeItem(Guid id)
     {
         NavigationManager.NavigateTo($"/edit/{id}");
+    }
+
+    private void SetPageIndex(int value)
+    {
+        Console.WriteLine($"clickedvalue={value}");
+
+        pageIndex = value;
+        FilterWardrobeItems();
     }
 }
