@@ -2,6 +2,11 @@
 
 namespace WardrobeInventory.Entities;
 
+/// <summary>
+/// Represents a wardrobe item entity in the Wardrobe Inventory application.
+/// Inherits from <see cref="BaseEntity"/> and includes properties specific to wardrobe items, 
+/// such as name, image path, color, material, and size.
+/// </summary>
 public class WardrobeItem : BaseEntity
 {
     public required string Name { get; set; }

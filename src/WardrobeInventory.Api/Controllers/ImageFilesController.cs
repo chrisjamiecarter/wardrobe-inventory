@@ -3,6 +3,9 @@ using WardrobeInventory.Constants;
 
 namespace WardrobeInventory.Api.Controllers;
 
+/// <summary>
+/// Provides an API endpoint for posting image files while enforcing content type and size restrictions.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class ImageFilesController(IHostEnvironment environment) : ControllerBase

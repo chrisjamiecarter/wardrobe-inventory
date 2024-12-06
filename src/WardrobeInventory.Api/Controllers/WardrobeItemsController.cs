@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using WardrobeInventory.Api.Contracts.Mappings;
 using WardrobeInventory.Api.Contracts.Requests;
-using WardrobeInventory.Entities;
 using WardrobeInventory.Repositories;
 
 namespace WardrobeInventory.Api.Controllers;
 
+/// <summary>
+/// Provides API endpoints for managing wardrobe items in the Wardrobe Inventory application.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class WardrobeItemsController(IWardrobeItemRepository repository) : ControllerBase
@@ -30,7 +32,7 @@ public class WardrobeItemsController(IWardrobeItemRepository repository) : Contr
     public async Task<IResult> GetWardrobeItemAsync([FromRoute] Guid id)
     {
         var entity = await repository.ReturnAsync(id);
-        
+
         return entity is null
             ? TypedResults.NotFound()
             : TypedResults.Ok(entity.ToResponse());

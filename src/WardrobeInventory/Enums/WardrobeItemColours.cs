@@ -1,5 +1,8 @@
 ﻿namespace WardrobeInventory.Enums;
 
+/// <summary>
+/// Defines the available colour options for wardrobe items in the Wardrobe Inventory application.
+/// </summary>
 public enum WardrobeItemColours
 {
     Black,

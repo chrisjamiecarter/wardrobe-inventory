@@ -5,6 +5,9 @@ using WardrobeInventory.Repositories;
 
 namespace WardrobeInventory.Api.Installers;
 
+/// <summary>
+/// Provides extension methods for configuring the infrastructure services in the Wardrobe Inventory application.
+/// </summary>
 public static class InfrastructureInstaller
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)

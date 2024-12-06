@@ -2,6 +2,9 @@
 
 namespace WardrobeInventory.Api.Installers;
 
+/// <summary>
+/// Provides extension methods for configuring and setting up the API services and middleware in the Wardrobe Inventory application.
+/// </summary>
 public static class ApiInstaller
 {
     public static IServiceCollection AddApi(this IServiceCollection services)
@@ -16,7 +19,6 @@ public static class ApiInstaller
     public static WebApplication AddMiddleware(this WebApplication app)
     {
         app.MapOpenApi();
-
         if (app.Environment.IsDevelopment())
         {
             app.MapScalarApiReference(options =>

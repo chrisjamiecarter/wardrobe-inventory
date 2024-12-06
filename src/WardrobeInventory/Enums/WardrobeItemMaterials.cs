@@ -1,5 +1,8 @@
 ﻿namespace WardrobeInventory.Enums;
 
+/// <summary>
+/// Defines the available material options for wardrobe items in the Wardrobe Inventory application.
+/// </summary>
 public enum WardrobeItemMaterials
 {
     Bamboo,
