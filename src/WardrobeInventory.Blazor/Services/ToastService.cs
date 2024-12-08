@@ -3,6 +3,9 @@ using WardrobeInventory.Blazor.Enums;
 
 namespace WardrobeInventory.Blazor.Services;
 
+/// <summary>
+/// Provides a service for managing toast notifications in the Blazor application.
+/// </summary>
 public class ToastService : IDisposable
 {
     private System.Timers.Timer? _countdown;

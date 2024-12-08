@@ -6,6 +6,9 @@ using WardrobeInventory.Blazor.Models.Responses;
 
 namespace WardrobeInventory.Blazor.Services;
 
+/// <summary>
+/// Provides methods for interacting with the Wardrobe Inventory API to manage wardrobe items.
+/// </summary>
 public class WardrobeItemService
 {
     private static readonly string BaseUrl = "https://localhost:7238/api/wardrobeitems";
@@ -88,7 +91,7 @@ public class WardrobeItemService
             response.IsSuccess = restResponse.IsSuccessStatusCode;
 
             if (response.IsSuccess)
-            { 
+            {
                 response.WardrobeItems = JsonSerializer.Deserialize<IReadOnlyList<WardrobeItemDto>>(restResponse.Content!, JsonSerializerOptions.Web)!;
             }
             else

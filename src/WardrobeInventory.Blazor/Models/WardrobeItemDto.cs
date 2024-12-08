@@ -2,6 +2,9 @@
 
 namespace WardrobeInventory.Blazor.Models;
 
+/// <summary>
+/// Represents a data transfer object for a wardrobe item.
+/// </summary>
 public class WardrobeItemDto
 {
     public required Guid Id { get; set; }

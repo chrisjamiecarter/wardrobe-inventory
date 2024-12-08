@@ -4,6 +4,9 @@ using WardrobeInventory.Blazor.Services;
 
 namespace WardrobeInventory.Blazor.Installers;
 
+/// <summary>
+/// Provides extension methods for configuring and setting up the Presentation services and middleware in the Wardrobe Inventory application.
+/// </summary>
 public static class PresentationInstaller
 {
     public static WebAssemblyHostBuilder AddPresentation(this WebAssemblyHostBuilder builder)

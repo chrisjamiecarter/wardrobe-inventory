@@ -6,6 +6,11 @@ using WardrobeInventory.Constants;
 
 namespace WardrobeInventory.Blazor.Services;
 
+/// <summary>
+/// Provides functionality to interact with the backend API for uploading image files. 
+/// This service handles the process of posting image files to a predefined endpoint 
+/// and returns a response indicating success or failure of the operation.
+/// </summary>
 public class ImageFileService
 {
     private static readonly string BaseUrl = "https://localhost:7238/api/imagefiles";
