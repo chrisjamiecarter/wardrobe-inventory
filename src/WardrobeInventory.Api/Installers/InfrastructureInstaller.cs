@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WardrobeInventory.Api.Contexts;
 using WardrobeInventory.Api.Repositories;
+using WardrobeInventory.Api.Services;
 using WardrobeInventory.Repositories;
 
 namespace WardrobeInventory.Api.Installers;
@@ -24,6 +25,8 @@ public static class InfrastructureInstaller
         });
 
         services.AddScoped<IWardrobeItemRepository, WardrobeItemRepository>();
+        
+        services.AddScoped<ISeederService, SeederService>();
 
         return services;
     }
@@ -33,6 +36,9 @@ public static class InfrastructureInstaller
         var context = serviceProvider.GetRequiredService<WardrobeInventoryDbContext>();
 
         context.Database.EnsureCreated();
+
+        var seeder = serviceProvider.GetRequiredService<ISeederService>();
+        seeder.SeedDatabase();
 
         return serviceProvider;
     }
