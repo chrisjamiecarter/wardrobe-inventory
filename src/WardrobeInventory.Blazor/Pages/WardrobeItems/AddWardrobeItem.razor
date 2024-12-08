@@ -1,6 +1,7 @@
 ﻿@page "/add"
 @inject ImageFileService ImageFileService
 @inject NavigationManager NavigationManager
+@inject ToastService ToastService
 @inject WardrobeItemService WardrobeItemService
 
 <PageTitle>Wardrobe Inventory - Add</PageTitle>
@@ -87,30 +88,31 @@
     {
         isLoading = true;
 
+        ImageFileResponse? imageFileResponse = null;
+
         if (file is not null)
         {
-            var imageFileResponse = await ImageFileService.PostImageFile(file);
-            Console.WriteLine($"imageFileResponse - {imageFileResponse.IsSuccess}");
+            imageFileResponse = await ImageFileService.PostImageFile(file);
             if (imageFileResponse.IsSuccess)
             {
                 request.ImagePath = imageFileResponse.ImagePath;
-            }
-            else
-            {
-                Console.WriteLine(imageFileResponse.Message);
             }
         }
 
         var response = await WardrobeItemService.PostWardrobeItem(request);
 
-        Console.WriteLine($"{nameof(AddWardrobeItemAsync)} - {response.IsSuccess}");
         if (response.IsSuccess)
         {
-            Console.WriteLine($"{response.WardrobeItem?.Id} - {response.WardrobeItem?.Name}");
+            if (imageFileResponse != null && !imageFileResponse.IsSuccess)
+            {
+                ToastService.ShowToast($"Added wardrobe item, error adding image file: {imageFileResponse.Message}", ToastLevel.Warning);
+            }
+            
+            ToastService.ShowToast("Added wardrobe item", ToastLevel.Success);
         }
         else
         {
-            Console.WriteLine(response.Message);
+            ToastService.ShowToast("Error adding wardrobe item", ToastLevel.Error);
         }
 
         NavigationManager.NavigateTo("/");
@@ -122,10 +124,6 @@
         fileErrorMessage = "";
 
         var allowedFileTypes = new List<string> { ".png", ".jpg", ".jpeg" };
-
-        Console.WriteLine($"Name = {inputFile.Name}");
-        Console.WriteLine($"Size = {inputFile.Size}");
-        Console.WriteLine($"ContentType = {inputFile.ContentType}");
 
         if (!allowedFileTypes.Contains(Path.GetExtension(inputFile.Name)))
         {

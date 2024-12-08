@@ -1,6 +1,7 @@
 ﻿@page "/edit/{Id:guid}"
 @inject ImageFileService ImageFileService
 @inject NavigationManager NavigationManager
+@inject ToastService ToastService
 @inject WardrobeItemService WardrobeItemService
 
 <PageTitle>Wardrobe Inventory - Edit</PageTitle>
@@ -100,14 +101,13 @@
         isLoading = true;
 
         var response = await WardrobeItemService.GetWardrobeItem(Id);
-        Console.WriteLine($"{nameof(OnInitializedAsync)} - {response.IsSuccess}");
         if (response.IsSuccess)
         {
             request = response.WardrobeItem;
         }
         else
         {
-            Console.WriteLine(response.Message);
+            ToastService.ShowToast($"Error loading wardrobe item: {response.Message}", ToastLevel.Error);
         }
 
         isLoading = false;
@@ -117,37 +117,36 @@
     {
         if (request is null)
         {
-            Console.WriteLine("request is null");
             return;
         }
 
         isLoading = true;
 
+        ImageFileResponse? imageFileResponse = null;
+
         if (file is not null)
         {
-            Console.WriteLine("uploading file");
-            var imageFileResponse = await ImageFileService.PostImageFile(file);
-            Console.WriteLine($"imageFileResponse - {imageFileResponse.IsSuccess}");
+            imageFileResponse = await ImageFileService.PostImageFile(file);
             if (imageFileResponse.IsSuccess)
             {
                 request.ImagePath = imageFileResponse.ImagePath;
-            }
-            else
-            {
-                Console.WriteLine(imageFileResponse.Message);
             }
         }
 
         var response = await WardrobeItemService.PutWardrobeItem(request);
 
-        Console.WriteLine($"{nameof(EditWardrobeItemAsync)} - {response.IsSuccess}");
         if (response.IsSuccess)
         {
-            Console.WriteLine($"{response.WardrobeItem?.Id} - {response.WardrobeItem?.Name}");
+            if (imageFileResponse != null && !imageFileResponse.IsSuccess)
+            {
+                ToastService.ShowToast($"Updated wardrobe item, error adding image file: {imageFileResponse.Message}", ToastLevel.Warning);
+            }
+
+            ToastService.ShowToast("Updated wardrobe item", ToastLevel.Success);
         }
         else
         {
-            Console.WriteLine(response.Message);
+            ToastService.ShowToast("Error updating wardrobe item", ToastLevel.Error);
         }
 
         NavigationManager.NavigateTo("/");
@@ -160,10 +159,6 @@
 
         var allowedFileTypes = new List<string> { ".png", ".jpg", ".jpeg" };
         
-        Console.WriteLine($"Name = {inputFile.Name}");
-        Console.WriteLine($"Size = {inputFile.Size}");
-        Console.WriteLine($"ContentType = {inputFile.ContentType}");
-
         if (!allowedFileTypes.Contains(Path.GetExtension(inputFile.Name)))
         {
             fileErrorMessage = "File not a valid type (PNG, JPG, JPEG)! It will not be uploaded.";

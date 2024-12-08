@@ -14,6 +14,7 @@ public static class PresentationInstaller
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
         builder.Services.AddScoped<ImageFileService>();
+        builder.Services.AddScoped<ToastService>();
         builder.Services.AddScoped<WardrobeItemService>();
 
         return builder;
