@@ -4,7 +4,7 @@ namespace WardrobeInventory.Api;
 
 /// <summary>
 /// The entry point for the Wardrobe Inventory API application.
-/// Configures and runs the web application, setting up services and middleware, including API and infrastructure components.
+/// Configures and runs the application, setting up services and middleware.
 /// </summary>
 public class Program
 {
